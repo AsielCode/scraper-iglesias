@@ -5,11 +5,11 @@ import re
 import time
 from duckduckgo_search import DDGS
 
-# CONFIGURACIÓN
+# CONFIGURACIÓN ACTUALIZADA: NYC
 BASE_URL = "https://www.churchstaffing.com/findjobs/search"
 PARAMS = {
     "Keywords": "Worship",
-    "Location": "New Jersey",
+    "Location": "New York City",  # <--- CAMBIO AQUÍ
     "Radius": "50",
     "Sort": "Date"
 }
@@ -58,7 +58,7 @@ def extract_emails_from_url(url):
     return list(emails)
 
 def get_jobs():
-    print("🔍 Buscando vacantes en ChurchStaffing...")
+    print("🔍 Buscando vacantes en ChurchStaffing para NYC...")
     try:
         response = requests.get(BASE_URL, params=PARAMS, headers=HEADERS)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -79,7 +79,7 @@ def get_jobs():
                 if title_tag:
                     title = title_tag.text.strip()
                     church = company_tag.text.strip() if company_tag else "Iglesia Desconocida"
-                    location = location_tag.text.strip() if location_tag else "NJ"
+                    location = location_tag.text.strip() if location_tag else "New York"
                     
                     print(f"   ⚡️ Procesando: {church}...")
                     
@@ -99,7 +99,7 @@ def get_jobs():
                         "Emails_Encontrados": ", ".join(emails) if emails else "No encontrados"
                     })
                     
-                    # Pausa pequeña para ser educados con los servidores
+                    # Pausa pequeña
                     time.sleep(1)
             except Exception as e:
                 continue
@@ -113,11 +113,11 @@ if __name__ == "__main__":
     data = get_jobs()
     if data:
         df = pd.DataFrame(data)
-        # Reordenar columnas para que Email salga primero
+        # Reordenar columnas
         cols = ['Iglesia', 'Emails_Encontrados', 'Website', 'Rol', 'Ubicación']
         df = df[cols]
         
-        csv_name = "leads_con_emails.csv"
+        csv_name = "leads_nyc_emails.csv"
         df.to_csv(csv_name, index=False)
         print(f"\n✅ ÉXITO: CSV generado '{csv_name}' con {len(data)} filas.")
     else:
